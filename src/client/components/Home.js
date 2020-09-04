@@ -3,7 +3,7 @@ import React from 'react';
 const Home =()=>{
     return (
         <div>
-            I am the home component
+            I am the home BEST BEST component
         </div>
     )
 }
