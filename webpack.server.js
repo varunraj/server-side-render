@@ -1,6 +1,11 @@
 const path = require('path');
+const merge = require('webpack-merge');
+const baseConfig = require('./webpack.base')
+// below module is to improve buld time of server bundle.js
+// it will skip webpack creating all node_module into the bundle
+const webpackNodeExternals = require('webpack-node-externals')
 
-module.exports = {
+const config  = {
     //inform we are building a bundle for nodeJS and not client.
     target:'node',    
     // tell webpack the root file of the app
@@ -11,23 +16,7 @@ module.exports = {
         path: path.resolve(__dirname, 'build')
     },
 
-    // tell webpack to run on every file it runs through
-    // rules 1. Run babel only for js using regex
-    module:{
-        rules:[
-            {
-                test: /\.js?$/,
-                loader: 'babel-loader',
-                exclude: /node_modules/,
-                options:{
-                    presets:[
-                        'react',
-                        'stage-0',
-                        ['env', {targets:{ browsers: ['last 2 versions']}}]
-                    ]
-                }
-            }
-        ]
-    }
-
+    externals: [webpackNodeExternals()]
 }
+;
+module.exports = merge(baseConfig,config);
