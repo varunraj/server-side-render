@@ -6,9 +6,12 @@ const app = express();
 app.use(express.static('public'));
 
 
-app.get('/',(req,res)=>{
-    res.send(renderer());
+app.get('*',(req,res)=>{
+    //we pass req object to render so that it can be 
+    // passed to static router to extract url
+    res.send(renderer(req));
 })
+
 
 
 app.listen(3000, ()=>{
