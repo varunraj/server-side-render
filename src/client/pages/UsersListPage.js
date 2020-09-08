@@ -30,4 +30,14 @@ function mapStateToProps(state){
     return {users : state.users}
 }
 
-export default connect(mapStateToProps,{ fetchUsers})(UserList)
+function loadData (store) {
+    //console.log("Loading some data")
+    // dispatch the action creator and return promise to index.js
+    return store.dispatch(fetchUsers());
+}
+
+
+export default {
+    loadData: loadData,
+    component: connect(mapStateToProps,{ fetchUsers})(UserList)
+}

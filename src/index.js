@@ -1,6 +1,8 @@
 //below code is to take care async calls inside actions creators
 import 'babel-polyfill';
 import express from 'express';
+import {matchRoutes} from 'react-router-config';
+import Routes from './client/Routes'
 import renderer from './helpers/renderer';
 import createStore from './helpers/createStore';
 
@@ -14,10 +16,26 @@ app.get('*', (req,res)=>{
     // logic to add logic and data to store
 
     const store = createStore();
-    //we pass req object to render so that it can be 
-    // passed to static router to extract url
     
-    res.send(renderer(req, store));
+    // below code will look routes and match with incoming req path
+    // then it knows which all componets to render 
+    // we are finding components to render for a path so that data fetch
+    // cab be done in advance.
+
+    // we then map over loaddata functions from mathed routes and invoke it
+    // console.log matchroute ouput to see what is in route object
+
+    const promises = matchRoutes(Routes, req.path).map(({route})=>{
+        return route.loadData ? route.loadData(store) : null;
+    })
+
+    // promise array contains a list of promises. Pass it to promise.all 
+    // which will resolve all promises and invoke then.
+    Promise.all(promises).then(()=>{
+        res.send(renderer(req, store));
+    })
+
+    
 })
 
 
