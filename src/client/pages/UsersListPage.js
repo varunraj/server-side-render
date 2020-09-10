@@ -4,6 +4,10 @@ import {fetchUsers} from '../actions'
 
 class UserList extends Component {
 
+    // we still need this client side fetch because if user went to 
+    // home and then come to users, react router wont send request to 
+    // express. So at that time, client need to fetch the data
+
     componentDidMount(){
         this.props.fetchUsers();
     }

@@ -1,6 +1,7 @@
 //below code is to take care async calls inside actions creators
 import 'babel-polyfill';
 import express from 'express';
+import proxy from 'express-http-proxy';
 import {matchRoutes} from 'react-router-config';
 import Routes from './client/Routes'
 import renderer from './helpers/renderer';
@@ -8,6 +9,16 @@ import createStore from './helpers/createStore';
 
 
 const app = express();
+
+// use the middleare to send any path /api to the api server
+app.use('/api', proxy('http://react-ssr-api.herokuapp.com', {
+        proxyReqOptDecorator(opts) {
+            opts.headers['x-forwarded-host'] = 'localhost:3000';
+            return opts;
+        }
+    } 
+))
+
 app.use(express.static('public'));
 
 
@@ -15,7 +26,10 @@ app.get('*', (req,res)=>{
     
     // logic to add logic and data to store
 
-    const store = createStore();
+    // we pass req object to createstore to get the cookie
+    // details of cookie
+
+    const store = createStore(req);
     
     // below code will look routes and match with incoming req path
     // then it knows which all componets to render 

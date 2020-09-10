@@ -14,13 +14,25 @@ import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import { Provider } from 'react-redux';
 import reducers from './reducers'
+import axios from 'axios'
+
+// creat a custom axios for client that will call api end point
+// which will be routed to actual end point via proxy
+
+// baseURL will append /api to /users so that it will be /api/users
+const axiosInstance = axios.create({
+     baseURL:'/api',
+});
+
 
 // second parameter is the state object sent from server which will set intial state
 // with server side values.
+
+// we also pass axios instance to thunk so that it can be used during action call
 const store = createStore(
      reducers, 
      window.INITIAL_STATE, 
-     applyMiddleware(thunk)
+     applyMiddleware(thunk.withExtraArgument(axiosInstance))
 );
 
 
