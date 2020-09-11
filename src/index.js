@@ -46,7 +46,15 @@ app.get('*', (req,res)=>{
     // promise array contains a list of promises. Pass it to promise.all 
     // which will resolve all promises and invoke then.
     Promise.all(promises).then(()=>{
-        res.send(renderer(req, store));
+
+        // below context object is for 400 not found page.
+        const context = {}
+
+        const content = renderer(req, store, context)
+        if (context.notFound) {
+            res.status(404);
+        }
+        res.send(content);
     })
 
     

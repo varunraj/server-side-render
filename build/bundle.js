@@ -193,6 +193,10 @@ var _App = __webpack_require__(13);
 
 var _App2 = _interopRequireDefault(_App);
 
+var _NotFoundPage = __webpack_require__(24);
+
+var _NotFoundPage2 = _interopRequireDefault(_NotFoundPage);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // we are going to define routes as Js objects to use
@@ -205,7 +209,7 @@ exports.default = [_extends({}, _App2.default, { // below routes to be nested in
     }), _extends({}, _UsersListPage2.default, {
         path: '/users'
 
-    })]
+    }), _extends({}, _NotFoundPage2.default)]
 })];
 
 /***/ }),
@@ -292,7 +296,15 @@ app.get('*', function (req, res) {
     // promise array contains a list of promises. Pass it to promise.all 
     // which will resolve all promises and invoke then.
     Promise.all(promises).then(function () {
-        res.send((0, _renderer2.default)(req, store));
+
+        // below context object is for 400 not found page.
+        var context = {};
+
+        var content = (0, _renderer2.default)(req, store, context);
+        if (context.notFound) {
+            res.status(404);
+        }
+        res.send(content);
     });
 });
 
@@ -623,14 +635,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // routes in js objects to react component
 
 // to prevent xxr attacks. remove script tags
-exports.default = function (req, store) {
+exports.default = function (req, store, context) {
 
     var content = (0, _server.renderToString)(_react2.default.createElement(
         _reactRedux.Provider,
         { store: store },
         _react2.default.createElement(
             _reactRouterDom.StaticRouter,
-            { location: req.path, context: {} },
+            { location: req.path, context: context },
             _react2.default.createElement(
                 'div',
                 null,
@@ -790,6 +802,41 @@ exports.default = function () {
 /***/ (function(module, exports) {
 
 module.exports = require("axios");
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// below prop is passed from static router (context)
+
+var NotFoundPage = function NotFoundPage(_ref) {
+    var _ref$staticContext = _ref.staticContext,
+        staticContext = _ref$staticContext === undefined ? {} : _ref$staticContext;
+
+    staticContext.notFound = true;
+    return _react2.default.createElement(
+        'h1',
+        null,
+        'Oops, route not found.'
+    );
+};
+
+exports.default = {
+    component: NotFoundPage
+};
 
 /***/ })
 /******/ ]);
